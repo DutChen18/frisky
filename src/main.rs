@@ -123,6 +123,7 @@ impl Cpu {
     pub fn step(&mut self) {
         for i in 0..8 {
             let index = (self.flag_z as usize) << 9 | (self.flag_c as usize) << 8 | (self.reg_i as usize & 0xF0) >> 1 | i;
+            let index = (index & 0xFFFFFF7E) | (index & 1) << 7 | 1;
             let ucode = (EE1[index] as u16) << 8 | (EE0[index] as u16);
             self.ucode_step(ucode ^ INVERT);
         }
@@ -143,7 +144,7 @@ fn main() {
     vrisc.mem[8] = 0b1000_1110;
     vrisc.mem[9] = 0b0111_1110;
     vrisc.mem[10] = 0b1100_0100;
-
+    
     for _ in 0..64 {
         vrisc.step();
     }
